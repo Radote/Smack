@@ -1,12 +1,14 @@
 import time
 #import pygetwindow as gw
 from openai import OpenAI
-#import google.generativeai as genai
 from mistralai import Mistral
+from anthropic import Anthropic
 import os
 import subprocess
 
-client = OpenAI()
+clientopenai = OpenAI()
+clientanthropic = Anthropic()
+
 
 # Gets title (improved performance if it's obvious no procrastinating)
 # Could be moved to a separate file
@@ -16,12 +18,14 @@ def read_title():
         active_window_id = subprocess.check_output(['xdotool', 'getactivewindow']).strip()
         
         # Get the window name using xprop
-        window_name = subprocess.check_output(['xprop', '-id', active_window_id, 'WM_NAME']).strip()
-        
+        if active_window_id:
+            return subprocess.check_output(['xprop', '-id', active_window_id, 'WM_NAME']).strip().decode('utf-8').split(' = ', 1)[1].strip('"')
+        else:
+            return False
         # Decode the byte string and remove the 'WM_NAME' part
-        window_name = window_name.decode('utf-8').split(' = ', 1)[1].strip('"')
         
-        return window_name
+
+
 
     except subprocess.CalledProcessError:
         return None
@@ -36,24 +40,41 @@ def read_content():
 
 def is_productive(content, service):
     
-    response = client.chat.completions.create(
-        model = "gpt-4o-mini",
+    # response = clientopenai.chat.completions.create(
+    #     model = "gpt-4o-mini",
+    #     messages=[
+    #     {"role": "system", "content": "I am a machine learning engineer. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'. Thanks :-)"},
+    # ]
+    # )
+
+    # print(response.choices[0].message())
+
+    response = clientanthropic.messages.create(
+        max_tokens = 5,
+        model="claude-3-5-sonnet-20241022",
+        temperature = 0,
+        system = "I am a machine learning engineer. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'.",
         messages=[
-        {"role": "system", "content": "I am a machine learning engineer. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive' or 'Not productive'. Thanks :-)"},
+        {
+            "role": "user", "content": content
+        }
     ]
     )
 
-    print(response.choices[0].message())
+    response = response.content[0].text
 
+    print(response)
+    if response == "Productive" or response == "Unsure":
+        return True
+    elif response == "Not Productive" or response == "Not productive":
+        return False
 
 
     return False
 
 # Kills current window, maybe display a little icon too?
 def kill_window():
-    #current_window = gw.getActiveWindow()
-    #current_window.minimize()
-    # This will minimize all of firefox.
+    subprocess.run(['xdotool', 'key', 'ctrl+w'])
     pass
 
 
@@ -68,11 +89,12 @@ def gui():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    all_content = set()
     while True:
         content = read_title()
-        print(content)
-        # if not is_productive(content, "OpenAI"):
-        #     kill_window()
-        # if not is_productive(content, "mistral"):
-        #     kill_window()
-        time.sleep(1)
+        if content and not content in all_content:
+            all_content.add(content)
+            if not is_productive(content, "Claude"):
+                kill_window()
+
+        time.sleep(5)
