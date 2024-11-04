@@ -108,5 +108,5 @@ if __name__ == '__main__':
             whiteblacklist[content] = is_productive(content, "Claude", plans)
         if not whiteblacklist[content]:
             kill_window()    
-        time.sleep(5)
+        time.sleep(1)
 
