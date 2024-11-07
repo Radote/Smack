@@ -8,15 +8,20 @@ from tkinter import simpledialog
 import json
 import threading
 from dotenv import load_dotenv
+import sys
+
 
 root = tk.Tk()
 root.withdraw()
-load_dotenv()
-anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-clientanthropic = Anthropic(api_key=anthropic_api_key)
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(filename='smack.log', level=logging.info)
+
+load_dotenv(".env")
+
+anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
+clientanthropic = Anthropic(api_key=anthropic_api_key)
+
 
 
 # Gets title (improved performance if it's obvious no procrastinating)
@@ -39,7 +44,7 @@ def is_productive(content, service, plans):
         max_tokens = 3,
         model="claude-3-5-sonnet-20241022",
         temperature = 0,
-        system = "I am a machine learning engineer, and today my plans are: {plans}. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'.",
+        system = f"I am a machine learning engineer, and today my plans are: {plans}. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'.",
         messages=[
         {
             "role": "user", "content": content
@@ -60,6 +65,14 @@ def is_productive(content, service, plans):
 def kill_window():
     subprocess.run(['xdotool', 'key', 'ctrl+w'])
     pass
+
+# Specifically for when there's many variations
+def safe_words(word):
+    safe_word = {"VLC"}
+    if "VLC" in word:
+        return True
+    else:
+        return False
 
 
 def gui():
@@ -104,9 +117,11 @@ if __name__ == '__main__':
     while True:
         content = read_title()
         logger.info(content)
-        if content and not content in whiteblacklist:
+        if content and not content in whiteblacklist and not safe_words(content):
+            logging.info("Querying Claude")
             whiteblacklist[content] = is_productive(content, "Claude", plans)
-        if not whiteblacklist[content]:
+        if  not safe_words(content) and not whiteblacklist[content]:
+            logging.info("Killing")
             kill_window()    
         time.sleep(1)
 
