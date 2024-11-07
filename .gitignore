@@ -3,3 +3,6 @@ possible GUI.pdf
 whiteblacklist.json
 dist/
 .env
+build/
+main.spec
+notes.md

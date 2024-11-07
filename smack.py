@@ -90,7 +90,7 @@ def load_dictionary(file_path):
         with open(file_path, "r") as file:
             return json.load(file)
     else:
-        return {"Safeword": True, "yewtu.be": True}
+        return {"Safeword", True}
     
 def save_dictionary(dictionary, file_path):
     if dict:
