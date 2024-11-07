@@ -52,5 +52,9 @@ Next time you run the program, say so in the prompt!
 
 That said, while it is running, you can't change it. It's a bit like a [Ulysses pact](https://en.wikipedia.org/wiki/Ulysses_pact), or a commitment contract for the behavioural economists and married people.
 
+#### What are good model providers?
+With personal testing, OpenAI, Anthropic and Google's LLM's performed well. Unfortunately, Mistral's LLM did not yet have broad enough knowledge for this task.
 
-
+I'd recommend choosing based on:
+1) Price
+2) Whether you can pay (OpenAI requires credit cards, for example)
