@@ -1,0 +1,5 @@
+venv/
+possible GUI.pdf
+whiteblacklist.json
+dist/
+.env
