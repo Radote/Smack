@@ -67,6 +67,7 @@ def kill_window():
     pass
 
 # Specifically for when there's many variations
+# TODO: Fix this implementation
 def safe_words(word):
     safe_word = {"VLC"}
     if "VLC" in word:
