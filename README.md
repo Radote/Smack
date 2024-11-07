@@ -43,7 +43,7 @@ Not yet! Windows support should be trivial with PyGetWindow. I have no clue abou
 I'd let it calibrate to you for a day. I set the program to turn on at startup. Afterwards, for the sake of habit, don't mess with it! 
 
 #### Why not just use Freedom/ColdTurkey etc.?  
-I love ColdTurkey! Sadly, I use Linux. Moreover, generic whitelists didn't quite work for me - I loved reading *anything*, so blocking youtube.com made me end up on Wikipedia, blocking Wikipedia on Our World in Data, etc. etc. Moreover, I may want to access Wikipedia pages related to programming, but not the Wikipedia page of [insert controversial celebrity here].
+I love ColdTurkey! Sadly, I use Linux. Moreover, generic blacklists didn't quite work for me - I loved reading *anything*, so blocking youtube.com made me end up on Wikipedia, blocking Wikipedia on Our World in Data, etc. etc. Moreover, I may want to access Wikipedia pages related to programming, but not the Wikipedia page of [insert controversial celebrity here].
 
 No more of that! Smack is extremely intelligent by default.
 
