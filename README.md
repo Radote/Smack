@@ -1,4 +1,4 @@
-![Project Logo](./icon.png)
+![Project Logo](https://github.com/user-attachments/assets/622d2b73-ebfc-490d-b945-46b216388f80)
 
 
 Smack automatically blocks unproductive websites - no need to set-up a whitelist/blacklist that is outsmarted, or too big/small! Smack also adapts
