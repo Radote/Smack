@@ -5,18 +5,18 @@ Smack automatically blocks unproductive websites - no need to set-up a whitelist
 to your current needs dynamically.
 
 
-## Getting started
+## Getting started 
+First, get an Anthropic API-key at https://console.anthropic.com/dashboard and load some cash on it.
+
+### Linux
 With a release:
 
-Download the dist/ folder onto your computer. Open the folder and add your API-key to the (possibly hidden) ".env" file. Now, left-click on Smack and you're good to go!
-
+Grab the executable under dist/ and put it on your PC in your favourite spot. Double-click and you're good to go!
 
 From source:
 1. Clone the project to your favourite directory of choice.
-2. Add your Anthropic API-Token to .env.
-3. Install dependencies.
-4. Customize the starting prompt in smack.py under is_productive.
-5. Run the program (e.g. python smack.py) and you're good to go! 
+2. Customize the starting prompt in smack.py under is_productive.
+3. Run the program (e.g. python smack.py) and you're good to go! 
 
 
 
@@ -58,3 +58,4 @@ With personal testing, OpenAI, Anthropic and Google's LLM's performed well. Unfo
 I'd recommend choosing based on:
 1) Price
 2) Whether you can pay (OpenAI requires credit cards, for example)
+
