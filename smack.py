@@ -15,6 +15,7 @@ dirs = AppDirs("Smack", "Smack project")
 user_config_path = dirs.user_config_dir
 os.makedirs(user_config_path, exist_ok=True)
 path = os.path.join(*os.path.split(__file__)[:-1])
+self_description = ""
 os.chdir(path)
 
 root = tk.Tk()
@@ -34,6 +35,17 @@ else:
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 clientanthropic = Anthropic(api_key=anthropic_api_key)
 
+self_descript_path = os.path.join(user_config_path, "self-description.txt")
+if os.path.exists(self_descript_path):
+    with open(self_descript_path, "r") as f:
+        self_description = f.read()
+else:
+    self_description = simpledialog.askstring("Self-description", "Please describe yourself (to personalise blocking)")
+    with open(self_descript_path, "w") as f:
+        f.write(self_description)
+
+
+
 
 
 # Gets title (improved performance if it's obvious no procrastinating)
@@ -50,13 +62,13 @@ def read_title():
         return "Safeword"
 
 
-def is_productive(content, service, plans):
+def query_model(content, service, plans):
 
     response = clientanthropic.messages.create(
         max_tokens = 3,
         model="claude-3-5-sonnet-20241022",
         temperature = 0,
-        system = f"I am a machine learning engineer, and today my plans are: {plans}. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'.",
+        system = f"{self_description}, and today my plans are: {plans}. Please determine if a given activity is productive or not by looking at currently open window titles. Please reply only with 'Productive', 'Not productive' or 'Unsure'.",
         messages=[
         {
             "role": "user", "content": content
@@ -76,16 +88,20 @@ def is_productive(content, service, plans):
 # Kills current window, maybe display a little icon too?
 def kill_window():
     subprocess.run(['xdotool', 'key', 'ctrl+w'])
-    pass
+    
+
 
 # Specifically for when there's many variations
 # TODO: Fix this implementation
-def safe_words(word):
-    safe_word = {"VLC"}
+# Return False when it is not in wildcardlist, or is actually false (unproductive)
+def query_wildcardlist(word):
+    safe_word = {"VLC": True}
     if "VLC" in word:
         return True
     else:
         return False
+
+
 
 
 def gui():
@@ -135,10 +151,10 @@ if __name__ == '__main__':
 
     while True:
         content = read_title()
-        if content and not content in whiteblacklist and not safe_words(content):
+        if content and not content in whiteblacklist and not query_wildcardlist(content):
             logging.info("Querying Claude")
-            whiteblacklist[content] = is_productive(content, "Claude", plans)
-        if  not safe_words(content) and not whiteblacklist[content]:
+            whiteblacklist[content] = query_model(content, "Claude", plans)
+        if  not query_wildcardlist(content) and not whiteblacklist[content]:
             logging.info("Killing")
             kill_window()
         time.sleep(1)
