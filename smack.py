@@ -88,9 +88,13 @@ def gui():
 def load_dictionary(file_path):
     if os.path.exists(file_path):
         with open(file_path, "r") as file:
-            return json.load(file)
+            data = json.load(file)  
+            if isinstance(data, dict):
+                return data
+            else:
+                return {"Safeword": True}
     else:
-        return {"Safeword", True}
+        return {"Safeword": True}
     
 def save_dictionary(dictionary, file_path):
     if dict:
