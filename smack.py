@@ -8,7 +8,12 @@ from tkinter import simpledialog
 import json
 import threading
 from dotenv import load_dotenv
+from appdirs import AppDirs
 
+
+dirs = AppDirs("Smack", "Smack project")
+user_config_path = dirs.user_config_dir
+os.makedirs(user_config_path, exist_ok=True)
 path = os.path.join(*os.path.split(__file__)[:-1])
 os.chdir(path)
 
@@ -17,10 +22,18 @@ root.withdraw()
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(filename='smack.log', level=logging.info)
 
-load_dotenv(os.path.join(path, ".env"))
+env_path = os.path.join(user_config_path, ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    str = "\"" + simpledialog.askstring("First-time set-up", "Please enter your API key (without quotes)") + "\""
+    with open(os.path.join(user_config_path, ".env"), "w") as env_file:
+        env_file.write("ANTHROPIC_API_KEY=" + str)
+    load_dotenv(env_path)
 
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 clientanthropic = Anthropic(api_key=anthropic_api_key)
+
 
 
 # Gets title (improved performance if it's obvious no procrastinating)
@@ -91,9 +104,10 @@ def load_dictionary(file_path):
             if isinstance(data, dict):
                 return data
             else:
+                logging.info("Creating new dictionary")
                 return {"Safeword": True}
     else:
-
+        logging.info("Creating new dictionary")
         return {"Safeword": True}
 
 def save_dictionary(dictionary, file_path):
@@ -113,7 +127,7 @@ if __name__ == '__main__':
     plans = simpledialog.askstring("Daily Plans", "What are your plans for today?")
     logging.info(plans)
 
-    file_path = "whiteblacklist.json"
+    file_path = os.path.join(user_config_path, "whiteblacklist.json")
 
     whiteblacklist = load_dictionary(file_path)
     save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, file_path))
