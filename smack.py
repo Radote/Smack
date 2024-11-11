@@ -8,20 +8,19 @@ from tkinter import simpledialog
 import json
 import threading
 from dotenv import load_dotenv
-import sys
 
+path = os.path.join(*os.path.split(__file__)[:-1])
+os.chdir(path)
 
 root = tk.Tk()
 root.withdraw()
-logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(filename='smack.log', level=logging.info)
 
-load_dotenv(".env")
+load_dotenv(os.path.join(path, ".env"))
 
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 clientanthropic = Anthropic(api_key=anthropic_api_key)
-
 
 
 # Gets title (improved performance if it's obvious no procrastinating)
@@ -29,17 +28,17 @@ def read_title():
     try:
         active_window_id = subprocess.check_output(['xdotool', 'getactivewindow']).strip()
         if active_window_id:
-            return subprocess.check_output(['xprop', '-id', active_window_id, 'WM_NAME']).strip().decode('utf-8').split(' = ', 1)[1].strip('"')
+            return subprocess.check_output(['xprop', '-id', active_window_id, 'WM_NAME'], stderr=subprocess.DEVNULL).strip().decode('utf-8').split(' = ', 1)[1].strip('"')
         else:
             return "Safeword"
 
     except subprocess.CalledProcessError:
         logging.info("Error in read_title: xdotool command failed (probably no active window/Firefox)")
         return "Safeword"
-        
+
 
 def is_productive(content, service, plans):
-    
+
     response = clientanthropic.messages.create(
         max_tokens = 3,
         model="claude-3-5-sonnet-20241022",
@@ -81,21 +80,22 @@ def gui():
         # Should initialize is_procrastinating, by prompt engineering the NN. Maybe save prompts when exiting?
         # read_title and read_content for now needn't interact with it.
         # kill_window sort of, but can just call an update in the if statement. Then prompt in bottom right?
-    # For now, I know how to do this with tkinter. 
+    # For now, I know how to do this with tkinter.
     pass
 
 
 def load_dictionary(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
         with open(file_path, "r") as file:
-            data = json.load(file)  
+            data = json.load(file)
             if isinstance(data, dict):
                 return data
             else:
                 return {"Safeword": True}
     else:
+
         return {"Safeword": True}
-    
+
 def save_dictionary(dictionary, file_path):
     if dict:
         with open(file_path, "w") as file:
@@ -106,7 +106,7 @@ def periodic_save(dictionary, file_path):
         logging.info("Saving dictionary")
         save_dictionary(dictionary, file_path)
         time.sleep(20)
-    
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -121,12 +121,10 @@ if __name__ == '__main__':
 
     while True:
         content = read_title()
-        logger.info(content)
         if content and not content in whiteblacklist and not safe_words(content):
             logging.info("Querying Claude")
             whiteblacklist[content] = is_productive(content, "Claude", plans)
         if  not safe_words(content) and not whiteblacklist[content]:
             logging.info("Killing")
-            kill_window()    
+            kill_window()
         time.sleep(1)
-
