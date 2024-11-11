@@ -86,7 +86,7 @@ def gui():
 
 
 def load_dictionary(file_path):
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
         with open(file_path, "r") as file:
             data = json.load(file)  
             if isinstance(data, dict):
