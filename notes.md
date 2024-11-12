@@ -8,4 +8,3 @@
 
 - Claude was pretty good too (and actually lets me pay)
 
-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
