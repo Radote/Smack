@@ -1,6 +1,7 @@
 import time
 from anthropic import Anthropic
 import subprocess
+import input_output
 import logging
 import os
 import tkinter as tk
@@ -17,6 +18,7 @@ os.makedirs(user_config_path, exist_ok=True)
 path = os.path.join(*os.path.split(__file__)[:-1])
 self_description = ""
 os.chdir(path)
+print(os.getcwd())
 
 root = tk.Tk()
 root.withdraw()
@@ -44,24 +46,6 @@ else:
     with open(self_descript_path, "w") as f:
         f.write(self_description)
 
-
-
-
-
-# Gets title (improved performance if it's obvious no procrastinating)
-def read_title():
-    try:
-        active_window_id = subprocess.check_output(['xdotool', 'getactivewindow']).strip()
-        if active_window_id:
-            return subprocess.check_output(['xprop', '-id', active_window_id, 'WM_NAME'], stderr=subprocess.DEVNULL).strip().decode('utf-8').split(' = ', 1)[1].strip('"')
-        else:
-            return "Safeword"
-
-    except subprocess.CalledProcessError:
-        logging.info("Error in read_title: xdotool command failed (probably no active window/Firefox)")
-        return "Safeword"
-
-
 def query_model(content, service, plans):
 
     response = clientanthropic.messages.create(
@@ -85,12 +69,7 @@ def query_model(content, service, plans):
         return False
     return True
 
-# Kills current window, maybe display a little icon too?
-def kill_window():
-    subprocess.run(['xdotool', 'key', 'ctrl+w'])
     
-
-
 # Specifically for when there's many variations
 # TODO: Fix this implementation
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
@@ -100,18 +79,6 @@ def query_wildcardlist(word):
         return True
     else:
         return False
-
-
-
-
-def gui():
-    # Needs to input and output with other parts.
-        # Should initialize is_procrastinating, by prompt engineering the NN. Maybe save prompts when exiting?
-        # read_title and read_content for now needn't interact with it.
-        # kill_window sort of, but can just call an update in the if statement. Then prompt in bottom right?
-    # For now, I know how to do this with tkinter.
-    pass
-
 
 def load_dictionary(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
@@ -137,7 +104,6 @@ def periodic_save(dictionary, file_path):
         save_dictionary(dictionary, file_path)
         time.sleep(20)
 
-
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     plans = simpledialog.askstring("Daily Plans", "What are your plans for today?")
@@ -150,11 +116,11 @@ if __name__ == '__main__':
     save_thread.start()
 
     while True:
-        content = read_title()
+        content = input_output.read_title()
         if content and not content in whiteblacklist and not query_wildcardlist(content):
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
         if  not query_wildcardlist(content) and not whiteblacklist[content]:
             logging.info("Killing")
-            kill_window()
+            input_output.kill_window()
         time.sleep(1)
