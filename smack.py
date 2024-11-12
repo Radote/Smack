@@ -11,7 +11,6 @@ import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
 
-
 dirs = AppDirs("Smack", "Smack project")
 user_config_path = dirs.user_config_dir
 os.makedirs(user_config_path, exist_ok=True)
@@ -70,15 +69,13 @@ def query_model(content, service, plans):
     return True
 
     
-# Specifically for when there's many variations
-# TODO: Fix this implementation
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
 def query_wildcardlist(word):
-    safe_word = {"VLC": True}
-    if "VLC" in word:
-        return True
-    else:
-        return False
+    wildcardlist = {"VLC": True}
+    for key in wildcardlist.keys():
+        if key in word: 
+            return wildcardlist[key]
+    return False
 
 def load_dictionary(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
