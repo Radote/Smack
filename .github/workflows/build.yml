@@ -1,0 +1,37 @@
+name: Build Executable for Multiple OSes
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Default runner for Linux
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest] # Target OSs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Make sure PyInstaller is installed
+
+      - name: Build executable with PyInstaller
+        run: |
+          pyinstaller --onefile --icon=icon.png --distpath ./dist/${{ matrix.os }} smack.py
+
+      - name: Upload Executable as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: executable-${{ matrix.os }}
+          path: ./dist/${{ matrix.os }}/main # Adjust path as needed based on PyInstaller's output
+
