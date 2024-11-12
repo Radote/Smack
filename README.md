@@ -5,17 +5,19 @@ to your current needs dynamically.
 
 ## Getting started
 
-First, get an Anthropic API-key at https://console.anthropic.com/dashboard and load some cash on it.
+First, get an Anthropic API-key at https://console.anthropic.com/dashboard and load some cash on it (1 buck is plenty, but 5 is minimum).
 
-### Linux
 
 ##### Release (recommended)
 
-Grab the executable under dist/ and put it on your PC in your favourite spot. Double-click, follow some basic instructions, and you're good to go!
+Under the release tab (to the right), click on it. Then download the .zip file corresponding to your OS, unzip, and voilà, there's the executable!
 
 ##### Source
 
 The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go.
+
+
+
 
 ## FAQ
 
