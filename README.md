@@ -61,7 +61,13 @@ Next time you run the program, say so in the prompt!
 
 With personal testing, OpenAI, Anthropic and Google's LLM's performed well. Unfortunately, Mistral's LLM did not yet have broad enough knowledge for this task.
 
+
 I'd recommend choosing based on:
 
 1. Price
 2. Whether you can pay (OpenAI requires credit cards, for example)
+
+
+#### What about privacy?
+
+Excellent point. This really depends on what you're comfortable with. Many of the big model providers have a 30-day retention policy (for API calls), but afterwards get rid of it. 
