@@ -27,7 +27,15 @@ jobs:
 
       - name: Build executable with PyInstaller
         run: |
-          pyinstaller --onefile --icon=icon.png --distpath ./dist/${{ matrix.os }} smack.py
+          if [ $RUNNER_OS = 'Linux' ]; then
+            pyinstaller --onefile --distpath ./dist/linux smack.py
+            # Set execute permissions for the Linux executable
+            chmod +x ./dist/linux/smack
+          elif [ $RUNNER_OS = 'Windows' ]; then
+            pyinstaller --onefile --icon=icon.png --distpath ./dist/windows smack.py
+          elif [ $RUNNER_OS = 'macOS' ]; then
+            pyinstaller --onefile --icon=icon.png --distpath ./dist/macos smack.py
+          fi
 
       - name: Upload Executable as Artifact
         uses: actions/upload-artifact@v3
