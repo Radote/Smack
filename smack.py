@@ -71,11 +71,11 @@ def query_model(content, service, plans):
     
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
 def query_wildcardlist(word):
-    wildcardlist = {"VLC": True}
+    wildcardlist = {"VLC": True, "Smack": False}
     for key in wildcardlist.keys():
         if key in word: 
             return wildcardlist[key]
-    return False
+    return "NA"
 
 def load_dictionary(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
@@ -117,7 +117,7 @@ if __name__ == '__main__':
         if content and not content in whiteblacklist and not query_wildcardlist(content):
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
-        if  not query_wildcardlist(content) and not whiteblacklist[content]:
+        if query_wildcardlist(content) == False or not whiteblacklist[content]:
             logging.info("Killing")
             input_output.kill_window()
         time.sleep(1)
