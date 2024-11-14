@@ -33,6 +33,21 @@ else:
         env_file.write("ANTHROPIC_API_KEY=" + str)
     load_dotenv(env_path)
 
+wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
+if os.path.exists(wildcard_path) and os.path.getsize(wildcard_path) > 0:
+        with open(wildcard_path, "r") as file:
+            data = json.load(file)
+            if isinstance(data, dict):
+                wildcardlist = data
+            else:
+                logging.info("Creating new wildcard dictionary")
+                
+else:
+    with open(wildcard_path, "w") as file:
+        logging.info("Creating new wildcard dictionary")
+        wildcardlist = {"Safeword": True}
+        json.dump(wildcardlist, file)
+
 anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 clientanthropic = Anthropic(api_key=anthropic_api_key)
 
@@ -44,6 +59,8 @@ else:
     self_description = simpledialog.askstring("Self-description", "Please describe yourself (to personalise blocking)")
     with open(self_descript_path, "w") as f:
         f.write(self_description)
+
+
 
 def query_model(content, service, plans):
 
@@ -71,7 +88,8 @@ def query_model(content, service, plans):
     
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
 def query_wildcardlist(word):
-    wildcardlist = {"VLC": True, "Smack": False}
+    logging.info("Querying wildcardlist")
+    #wildcardlist = {"VLC": True, "Smack": False}
     for key in wildcardlist.keys():
         if key in word: 
             return wildcardlist[key]
