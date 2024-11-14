@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     while True:
         content = input_output.read_title()
-        if content and not content in whiteblacklist and not query_wildcardlist(content):
+        if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
         if query_wildcardlist(content) == False or not whiteblacklist[content]:

@@ -1,14 +1,13 @@
 ![Project Logo](icon.png)
 
 Smack automatically blocks unproductive websites - no need to set-up a whitelist/blacklist that is outsmarted, or too big/small! Smack also adapts
-to your current needs dynamically. 
+to your current needs dynamically.
 
 ## Getting started
 
 Smack is available for Windows, Mac and Linux.
 
 First, get an Anthropic API-key at https://console.anthropic.com/dashboard and load some cash on it (1 buck is plenty, but 5 is minimum).
-
 
 ##### Release (recommended)
 
@@ -17,9 +16,6 @@ Under the release tab (to the right), click on it. Then download the .zip file c
 ##### Source
 
 The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go.
-
-
-
 
 ## FAQ
 
@@ -32,10 +28,13 @@ I've barely gone upwards of 5 cents a day. With time, it will also get more effi
 Yeah, unfortunately Wayland seems to interfere with the functioning of the program. It does work for Brave. If somebody knows any good tab-reading libraries/utilities for Linux, let me know! (Currently, we use xdotool).
 
 #### Where is all my data stored?
+
 All data is stored in the respective config directory of an OS. Note your API-key is stored in plaintext.
 
 #### It misclassified something
+
 First, kill Smack.
+
 1. Give a better task prompt when it queries you at startup.
 2. Change your self-description (it is located in a file under .config/Smack/) so that it better matches you.
 3. If it's a website (e.g. "mywork.com") with a non-changing title, you can ctrl+f in whiteblacklist.json and change "mywork.com": false to "mywork.com": true. Then restart Smack.
@@ -57,17 +56,15 @@ No more of that! Smack is extremely intelligent by default.
 
 Next time you run the program, say so in the prompt!
 
-#### What are good model providers? 
+#### What are good model providers?
 
 With personal testing, OpenAI, Anthropic and Google's LLM's performed well. Unfortunately, Mistral's LLM did not yet have broad enough knowledge for this task.
-
 
 I'd recommend choosing based on:
 
 1. Price
 2. Whether you can pay (OpenAI requires credit cards, for example)
 
-
 #### What about privacy?
 
-Excellent point. This really depends on what you're comfortable with. Many of the big model providers have a 30-day retention policy (for API calls), but afterwards get rid of it. 
+Excellent point. This really depends on what you're comfortable with. Many of the big model providers have a 30-day retention policy (for API calls), but afterwards get rid of it.
