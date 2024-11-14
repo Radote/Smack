@@ -61,7 +61,7 @@ Rectangle {
                     color: "#d2d2d2"
 
                     TextEdit {
-                        id: textEdit
+                        id: goaltodaytext
                         x: 8
                         y: 8
                         width: 419
@@ -74,7 +74,7 @@ Rectangle {
                 }
 
                 Button {
-                    id: button
+                    id: startprogram
                     x: 324
                     y: 363
                     width: 110
@@ -119,12 +119,12 @@ Rectangle {
                         color: "#d2d2d2"
                         clip: true
                         TextInput {
-                            id: textInput1
+                            id: apikeyinput
                             x: 9
                             y: 5
                             width: 479
                             height: 33
-                            text: "sk-...."
+                            text: "sk-..."
                             font.pixelSize: 18
                             z: 2
                             font.family: "Courier"
@@ -391,7 +391,9 @@ Rectangle {
 
         Connections {
             target: stackView
-            onEnabledChanged: console.log("clicked")
+            function onEnabledChanged() {
+                console.log("clicked")
+            }
         }
 
         Connections {
@@ -436,6 +438,22 @@ Rectangle {
 
             onClicked: {
                 stackView.replace(homepage)
+            }
+        }
+
+        Connections {
+            target: startprogram
+
+            function onClicked() {
+                con.start_program()
+            }
+        }
+
+        Connections {
+            target: con
+
+            function onApiKeyReady(message) {
+                apikeyinput.text = message
             }
         }
     }

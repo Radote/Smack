@@ -11,6 +11,9 @@ import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
 
+
+
+"""Loading up environment variables and dictionaries from memory"""
 dirs = AppDirs("Smack", "Smack project")
 user_config_path = dirs.user_config_dir
 os.makedirs(user_config_path, exist_ok=True)
