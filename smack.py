@@ -4,12 +4,17 @@ import subprocess
 import input_output
 import logging
 import os
+import sys
 import tkinter as tk
 from tkinter import simpledialog
 import json
 import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'QtSmack', 'Python')))
+
+from QtSmack.Python.gui import start_GUI
+
 
 
 
@@ -124,7 +129,8 @@ def periodic_save(dictionary, file_path):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    plans = simpledialog.askstring("Daily Plans", "What are your plans for today?")
+    plans = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
+
     logging.info(plans)
 
     file_path = os.path.join(user_config_path, "whiteblacklist.json")
@@ -135,6 +141,7 @@ if __name__ == '__main__':
 
     while True:
         content = input_output.read_title()
+        logging.info(query_wildcardlist(content))
         if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
