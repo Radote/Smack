@@ -32,7 +32,7 @@ jobs:
             # Set execute permissions for the Linux executable
             chmod +x ./dist/linux/smack
           elif [ $RUNNER_OS = 'Windows' ]; then
-            pyinstaller --onefile --icon=images/icon.png --distpath ./dist/windows-latest --add-data "smack.qml:." --add-data "images/*:images" smack.py
+            pyinstaller --onefile --icon=images/icon.png --distpath ./dist/windows-latest --add-data "smack.qml;." --add-data "images/*;images" smack.py
           elif [ $RUNNER_OS = 'macOS' ]; then
             pyinstaller --onefile --icon=images/icon.png --distpath ./dist/macos-latest --add-data "smack.qml:." --add-data "images/*:images" smack.py
           fi
