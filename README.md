@@ -7,7 +7,7 @@ to your current needs dynamically.
 
 Smack is available for Windows, Mac and Linux.
 
-First, get an Anthropic API-key at https://console.anthropic.com/dashboard and load some cash on it (1 buck is plenty, but 5 is minimum).
+First, get an [Anthropic account](https://console.anthropic.com/dashboard) and load some cash on it (5 bucks will get you going for a couple of months). Then, get an API-key.
 
 ##### Release (recommended)
 
