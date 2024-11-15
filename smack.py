@@ -144,9 +144,10 @@ if __name__ == '__main__':
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
     with open(self_descript_path, "w") as f:
             f.write(self_description)
+
     clientanthropic = Anthropic(api_key=anthropic_api_key)
 
-
+    
     logging.info(f"Plans are {plans}")
 
 

@@ -207,7 +207,7 @@ ApplicationWindow {
                         height: 38
                         color: "#d2d2d2"
                         TextInput {
-                            id: textInput2
+                            id: allowtextInput
                             x: 9
                             y: 5
                             width: 479
@@ -220,7 +220,7 @@ ApplicationWindow {
                         }
 
                         Button {
-                            id: button1
+                            id: allowbutton
                             x: 562
                             y: 1
                             width: 100
@@ -280,7 +280,7 @@ ApplicationWindow {
                         height: 38
                         color: "#d2d2d2"
                         TextInput {
-                            id: textInput3
+                            id: blocktextInput
                             x: 9
                             y: 5
                             width: 479
@@ -294,7 +294,7 @@ ApplicationWindow {
                     }
 
                     Button {
-                        id: button2
+                        id: blockbutton
                         x: 562
                         y: 63
                         width: 100
@@ -445,7 +445,7 @@ ApplicationWindow {
             target: startprogram
 
             function onClicked() {
-                con.start_program(goaltodaytext.text);
+                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text);
             }
         }
 
@@ -458,6 +458,22 @@ ApplicationWindow {
 
             function onSelfDescriptReady(message) {
                 selfdescripttext.text = message;
+            }
+        }
+
+        Connections {
+            target: allowbutton
+            function onClicked() {
+                con.allow_word(allowtextInput.text);
+                allowtextInput.text = "";
+            }
+        }
+
+        Connections {
+            target: blockbutton
+            function onClicked() {
+                con.block_word(blocktextInput.text);
+                blocktextInput.text = "";
             }
         }
     }
