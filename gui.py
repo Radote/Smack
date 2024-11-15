@@ -22,7 +22,7 @@ class Bridge(QObject):
 
     @Slot(str)
     def api_key_GtoP(self, s):
-        print(s)
+        self.api_key = s
     
     @Slot(result=str)
     def load_api_key(self):
@@ -31,11 +31,21 @@ class Bridge(QObject):
     @Slot(result=str)
     def load_self_description(self):
         self.selfDescriptReady.emit(self.self_description)
-    @Slot(str)
-    def start_program(self, s):
+    @Slot(str, str, str)
+    def start_program(self, s, t, v):
         self.daily_plans = s
+        self.api_key = t
+        self.self_description = v
         print("START")
         QApplication.quit()
+    
+    @Slot(str)
+    def allow_word(self, s):
+        print(s)
+
+    @Slot(str)
+    def block_word(self, s):
+        print(s)
 
 def get_resource_path(file_name):
     if getattr(sys, 'frozen', False):  # Check if running in a bundled app
@@ -72,7 +82,7 @@ def start_GUI(api_key, self_description):
 
     app.exec()
 
-    return bridge.daily_plans
+    return bridge.daily_plans, bridge.api_key, bridge.self_description
 
 if __name__ == "__main__":
     start_GUI("Nuhuh", "That's me")

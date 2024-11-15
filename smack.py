@@ -18,55 +18,62 @@ from gui import start_GUI
 
 
 """Loading up environment variables and dictionaries from memory"""
-dirs = AppDirs("Smack", "Smack project")
-user_config_path = dirs.user_config_dir
-os.makedirs(user_config_path, exist_ok=True)
-path = os.path.join(*os.path.split(__file__)[:-1])
-self_description = ""
-os.chdir(path)
-print(os.getcwd())
 
-root = tk.Tk()
-root.withdraw()
-logging.basicConfig(level=logging.INFO)
-logging.basicConfig(filename='smack.log', level=logging.info)
+anthropic_api_key = None
+clientanthropic = None
+wildcardlist = None
+self_description = None
+whiteblacklist = None
 
-env_path = os.path.join(user_config_path, ".env")
-if os.path.exists(env_path):
+def load_everything():
+    global anthropic_api_key
+    global clientanthropic
+    global wildcardlist
+    global self_description
+    global whiteblacklist
+    dirs = AppDirs("Smack", "Smack project")
+    user_config_path = dirs.user_config_dir
+    os.makedirs(user_config_path, exist_ok=True)
+    path = os.path.join(*os.path.split(__file__)[:-1])
+    self_description = ""
+    os.chdir(path)
+    print(os.getcwd())
+
+    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename='smack.log', level=logging.info)
+
+    env_path = os.path.join(user_config_path, ".env")
     load_dotenv(env_path)
-else:
-    str = "\"" + simpledialog.askstring("First-time set-up", "Please enter your API key (without quotes)") + "\""
-    with open(os.path.join(user_config_path, ".env"), "w") as env_file:
-        env_file.write("ANTHROPIC_API_KEY=" + str)
-    load_dotenv(env_path)
+    anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
 
-wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
-if os.path.exists(wildcard_path) and os.path.getsize(wildcard_path) > 0:
-        with open(wildcard_path, "r") as file:
-            data = json.load(file)
-            if isinstance(data, dict):
-                wildcardlist = data
-            else:
-                logging.info("Creating new wildcard dictionary")
-                
-else:
-    with open(wildcard_path, "w") as file:
-        logging.info("Creating new wildcard dictionary")
-        wildcardlist = {"Safeword": True}
-        json.dump(wildcardlist, file)
+   
 
-anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
-clientanthropic = Anthropic(api_key=anthropic_api_key)
+    wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
+    if os.path.exists(wildcard_path) and os.path.getsize(wildcard_path) > 0:
+            with open(wildcard_path, "r") as file:
+                data = json.load(file)
+                if isinstance(data, dict):
+                    wildcardlist = data
+                else:
+                    logging.info("Creating new wildcard dictionary")
+                    
+    else:
+        with open(wildcard_path, "w") as file:
+            logging.info("Creating new wildcard dictionary")
+            wildcardlist = {"Safeword": True}
+            json.dump(wildcardlist, file)
 
-self_descript_path = os.path.join(user_config_path, "self-description.txt")
-if os.path.exists(self_descript_path):
+
+    self_descript_path = os.path.join(user_config_path, "self-description.txt")
+   
     with open(self_descript_path, "r") as f:
         self_description = f.read()
-else:
-    self_description = simpledialog.askstring("Self-description", "Please describe yourself (to personalise blocking)")
-    with open(self_descript_path, "w") as f:
-        f.write(self_description)
+    
+    file_path = os.path.join(user_config_path, "whiteblacklist.json")
 
+    whiteblacklist = load_dictionary(file_path)
+    save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, file_path))
+    save_thread.start()
 
 
 def query_model(content, service, plans):
@@ -92,7 +99,6 @@ def query_model(content, service, plans):
         return False
     return True
 
-    
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
 def query_wildcardlist(word):
     logging.info("Querying wildcardlist")
@@ -128,19 +134,24 @@ def periodic_save(dictionary, file_path):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    plans = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
+    load_everything()
+    plans, anthropic_api_key, self_description = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
+    dirs = AppDirs("Smack", "Smack project")
+    user_config_path = dirs.user_config_dir
+    #anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
+    with open(os.path.join(user_config_path, ".env"), "w") as env_file:
+            env_file.write("ANTHROPIC_API_KEY=" + anthropic_api_key)
+    self_descript_path = os.path.join(user_config_path, "self-description.txt")
+    with open(self_descript_path, "w") as f:
+            f.write(self_description)
+    clientanthropic = Anthropic(api_key=anthropic_api_key)
+
 
     logging.info(f"Plans are {plans}")
 
-    file_path = os.path.join(user_config_path, "whiteblacklist.json")
-
-    whiteblacklist = load_dictionary(file_path)
-    save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, file_path))
-    save_thread.start()
 
     while True:
         content = input_output.read_title()
-        logging.info("content")
         if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
