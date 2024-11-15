@@ -11,10 +11,9 @@ import json
 import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'QtSmack', 'Python')))
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'QtSmack', 'Python')))
 
-from QtSmack.Python.gui import start_GUI
-
+from gui import start_GUI
 
 
 

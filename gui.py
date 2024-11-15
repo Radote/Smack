@@ -8,8 +8,6 @@ from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QObject, Slot, Signal
 from PySide6.QtWidgets import QApplication
 
-daily_plans = None
-
 
 class Bridge(QObject):
     global daily_plans
@@ -21,8 +19,6 @@ class Bridge(QObject):
         self.api_key = api_key
         self.self_description = self_description
         self.daily_plans = ""
-
-
 
     @Slot(str)
     def api_key_GtoP(self, s):
@@ -51,16 +47,14 @@ def get_resource_path(file_name):
     return QUrl.fromLocalFile(os.path.join(base_path, file_name))
 
 
-def main():
+def start_GUI(api_key, self_description):
     app = QGuiApplication(sys.argv)
 
     # Set up the QQuickView and load the QML file
     engine = QQmlApplicationEngine()
-    api_key = "Hi"
-    self_description = "bye"
     bridge = Bridge(api_key, self_description)
     engine.rootContext().setContextProperty("con", bridge)
-    qml_file = get_resource_path("FromScratch2.qml")
+    qml_file = get_resource_path("smack.qml")
 
     # Check if the QML file exists and load it
     if not qml_file.isValid():
@@ -76,13 +70,16 @@ def main():
     bridge.load_api_key()
     bridge.load_self_description()
 
-    
+    app.exec()
 
-    sys.exit(app.exec())
+    return bridge.daily_plans
 
 if __name__ == "__main__":
-    main()
+    start_GUI("Nuhuh", "That's me")
 
 
 # pyinstaller --onefile --add-data "FromScratch.qml:." FromScratch.py
-# pyinstaller --onefile --add-data "FromScratch.qml:." --add-data "images/*:images" FromScratch.py
+# pyinstaller --onefile --add-data "FromScratch2.qml:." --add-data "images/*:images" FromScratch.py
+# pyinstaller --onefile --add-data "smack.qml:." --add-data "images/*:images" FromScratch.py
+# pyinstaller --onefile --add-data "smack.qml:." --add-data "images/*:images" smack.py
+# pyinstaller --onefile --add-data "input_output/smack.qml:input_output" --add-data "input_output/images/*:input_output/images" smack.py

@@ -28,13 +28,13 @@ jobs:
       - name: Build executable with PyInstaller
         run: |
           if [ $RUNNER_OS = 'Linux' ]; then
-            pyinstaller --onefile --distpath ./dist/linux smack.py
+            pyinstaller --onefile --distpath ./dist/linux --add-data "smack.qml:." --add-data "images/*:images" smack.py
             # Set execute permissions for the Linux executable
             chmod +x ./dist/linux/smack
           elif [ $RUNNER_OS = 'Windows' ]; then
-            pyinstaller --onefile --icon=icon.png --distpath ./dist/windows smack.py
+            pyinstaller --onefile --icon=icon.png --distpath ./dist/windows --add-data "smack.qml:." --add-data "images/*:images" smack.py
           elif [ $RUNNER_OS = 'macOS' ]; then
-            pyinstaller --onefile --icon=icon.png --distpath ./dist/macos smack.py
+            pyinstaller --onefile --icon=icon.png --distpath ./dist/macos --add-data "smack.qml:." --add-data "images/*:images" smack.py
           fi
 
       - name: Upload Executable as Artifact
