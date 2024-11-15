@@ -30,7 +30,7 @@ jobs:
           if [ $RUNNER_OS = 'Linux' ]; then
             pyinstaller --onefile --distpath ./dist/linux-latest --add-data "smack.qml:." --add-data "images/*:images" smack.py
             # Set execute permissions for the Linux executable
-            chmod +x ./dist/linux/smack
+            chmod +x ./dist/linux-latest/smack
           elif [ $RUNNER_OS = 'Windows' ]; then
             pyinstaller --onefile --icon=images/icon.png --distpath ./dist/windows-latest --add-data "smack.qml;." --add-data "images/*;images" smack.py
           elif [ $RUNNER_OS = 'macOS' ]; then
