@@ -131,7 +131,7 @@ def periodic_save(dictionary, file_path):
 if __name__ == '__main__':
     plans = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
 
-    logging.info(plans)
+    logging.info(f"Plans are {plans}")
 
     file_path = os.path.join(user_config_path, "whiteblacklist.json")
 
@@ -141,11 +141,12 @@ if __name__ == '__main__':
 
     while True:
         content = input_output.read_title()
-        logging.info(query_wildcardlist(content))
+        logging.info("content")
         if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
-        if query_wildcardlist(content) == False or not whiteblacklist[content]:
+    
+        if query_wildcardlist(content) == False or (query_wildcardlist(content) == "NA" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
         time.sleep(1)
