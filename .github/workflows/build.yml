@@ -41,5 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: executable-${{ matrix.os }}
-          path: ./dist/${{ matrix.os }}/smack # Adjust path as needed based on PyInstaller's output
-
+          path: |
+            ${{ runner.os == 'Linux' && './dist/ubuntu-latest/smack' || '' }}
+            ${{ runner.os == 'Windows' && './dist/windows-latest/smack.exe' || '' }}
+            ${{ runner.os == 'macOS' && './dist/macos-latest/smack.app' || '' }}
