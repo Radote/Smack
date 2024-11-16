@@ -17,7 +17,9 @@ Under the release tab (to the right), click on it. Then download the .zip file c
 
 ##### Source
 
-The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go.
+The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go. If you want to build from source, install dependencies and then run 
+
+`pyinstaller --onefile --add-data "input_output/smack.qml:input_output" --add-data "input_output/images/*:input_output/images" smack.py`
 
 ## FAQ
 
