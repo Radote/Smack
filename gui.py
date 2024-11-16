@@ -19,6 +19,7 @@ class Bridge(QObject):
         self.api_key = api_key
         self.self_description = self_description
         self.daily_plans = ""
+        self.add_to_wildcardlist = {}
 
     @Slot(str)
     def api_key_GtoP(self, s):
@@ -41,11 +42,11 @@ class Bridge(QObject):
     
     @Slot(str)
     def allow_word(self, s):
-        print(s)
+        self.add_to_wildcardlist[s] = True
 
     @Slot(str)
     def block_word(self, s):
-        print(s)
+        self.add_to_wildcardlist[s] = False
 
 def get_resource_path(file_name):
     if getattr(sys, 'frozen', False):  # Check if running in a bundled app
@@ -82,7 +83,7 @@ def start_GUI(api_key, self_description):
 
     app.exec()
 
-    return bridge.daily_plans, bridge.api_key, bridge.self_description
+    return bridge.daily_plans, bridge.api_key, bridge.self_description, bridge.add_to_wildcardlist
 
 if __name__ == "__main__":
     start_GUI("Nuhuh", "That's me")

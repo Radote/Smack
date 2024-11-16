@@ -5,3 +5,4 @@ whiteblacklist.json
 build/
 main.spec
 notes.md
+dist/

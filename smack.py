@@ -104,7 +104,7 @@ def query_wildcardlist(word):
     logging.info("Querying wildcardlist")
     #wildcardlist = {"VLC": True, "Smack": False}
     for key in wildcardlist.keys():
-        if key in word: 
+        if key.lower() in word.lower(): 
             return wildcardlist[key]
     return "NA"
 
@@ -134,8 +134,10 @@ def periodic_save(dictionary, file_path):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+
+    """First, we load all the variables and interact with the GUI"""
     load_everything()
-    plans, anthropic_api_key, self_description = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
+    plans, anthropic_api_key, self_description, add_to_wildcardlist = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
     dirs = AppDirs("Smack", "Smack project")
     user_config_path = dirs.user_config_dir
     #anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
@@ -144,19 +146,21 @@ if __name__ == '__main__':
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
     with open(self_descript_path, "w") as f:
             f.write(self_description)
-
+    wildcardlist.update(add_to_wildcardlist)
+    wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
+    with open(wildcard_path, "w") as file:
+            json.dump(wildcardlist, file)
     clientanthropic = Anthropic(api_key=anthropic_api_key)
 
     
-    logging.info(f"Plans are {plans}")
-
-
+    """The main blocking loop"""
     while True:
         content = input_output.read_title()
+        logging.info(content)
         if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
-    
+            
         if query_wildcardlist(content) == False or (query_wildcardlist(content) == "NA" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
