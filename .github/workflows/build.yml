@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Default runner for Linux
+    runs-on: ${{ matrix.os }} # Default runner for Linux
 
     strategy:
       matrix:
