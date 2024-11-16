@@ -11,7 +11,7 @@ First, get an [Anthropic account](https://console.anthropic.com/dashboard) and l
 
 ##### Release (recommended)
 
-NOTE: Currently, only Ubuntu works. This will be fixed ASAP!
+NOTE: Currently, only Linux works. This will be fixed ASAP!
 
 Under the release tab (to the right), click on it. Then download the .zip file corresponding to your OS, unzip, and voilà, there's the executable! Drag-and-drop to your favourite location and double-click when ready. Make sure to fill out all the necessary things under the settings page (e.g. API-key) and you're good to go!
 
