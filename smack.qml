@@ -62,6 +62,7 @@ ApplicationWindow {
                         id: goaltodaytext
                         x: 8
                         y: 8
+                        focus: true
                         width: 419
                         height: 59
                         text: "Insert here\n"
@@ -69,7 +70,16 @@ ApplicationWindow {
                         font.pixelSize: 20
                         clip: true
                         font.family: "Courier"
+
                         //textFormat: Text.RichText
+
+                        Keys.onPressed: function (event) {
+                            if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && event.modifiers === Qt.ControlModifier) {
+                                console.log("Ctrl + Enter pressed");
+                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text);
+                                event.accept();
+                            }
+                        }
                     }
                 }
 
