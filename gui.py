@@ -89,8 +89,4 @@ if __name__ == "__main__":
     start_GUI("Nuhuh", "That's me")
 
 
-# pyinstaller --onefile --add-data "FromScratch.qml:." FromScratch.py
-# pyinstaller --onefile --add-data "FromScratch2.qml:." --add-data "images/*:images" FromScratch.py
-# pyinstaller --onefile --add-data "smack.qml:." --add-data "images/*:images" FromScratch.py
 # pyinstaller --onefile --add-data "smack.qml:." --add-data "images/*:images" smack.py
-# pyinstaller --onefile --add-data "input_output/smack.qml:input_output" --add-data "input_output/images/*:input_output/images" smack.py

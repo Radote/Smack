@@ -17,9 +17,9 @@ Under the release tab (to the right), click on it. Then download the .zip file c
 
 ##### Source
 
-The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go. If you want to build from source, install dependencies and then run 
+The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go. If you want to build from source, install dependencies and then run
 
-`pyinstaller --onefile --add-data "input_output/smack.qml:input_output" --add-data "input_output/images/*:input_output/images" smack.py`
+pyinstaller --onefile --add-data "smack.qml:." --add-data "images/\*:images" smack.py
 
 ## FAQ
 
@@ -72,4 +72,4 @@ I'd recommend choosing based on:
 
 #### What about privacy?
 
-Excellent point. This really depends on what you're comfortable with. The people working on Smack obviously get none of your data. That said, it does query a model in the background, so the organization will get that information.  Many of the big model providers have a 30-day retention policy (for API calls), but afterwards get rid of it. 
+Excellent point. This really depends on what you're comfortable with. The people working on Smack obviously get none of your data. That said, it does query a model in the background, so the organization will get that information. Many of the big model providers have a 30-day retention policy (for API calls), but afterwards get rid of it.
