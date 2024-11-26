@@ -21,6 +21,7 @@ ApplicationWindow {
         y: 0
         width: 1796
         height: 1060
+        initialItem: homepage
 
         Page {
             id: homepage
