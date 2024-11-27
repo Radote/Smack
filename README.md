@@ -19,7 +19,9 @@ Under the release tab (to the right), click on it. Then download the .zip file c
 
 The entry-point is smack.py, so if you run that (with necessary dependencies) you're good to go. If you want to build from source, install dependencies and then run
 
-> pyinstaller --onefile --add-data "smack.qml:." --add-data "images/\*:images" smack.py
+```
+pyinstaller --onefile --add-data "smack.qml:." --add-data "images/\*:images" smack.py
+```
 
 ## FAQ
 
