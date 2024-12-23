@@ -148,8 +148,15 @@ def periodic_save(dictionary, file_path):
         save_dictionary(dictionary, file_path)
         time.sleep(20)
 
+def resource_path(relative_path):
+    """Get the absolute path to a resource, works for dev and for PyInstaller bundle."""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller creates a _MEIPASS temporary folder to store resources during execution
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 def main():
+    global clientanthropic
     """First, we load all the variables and interact with the GUI"""
     config_dict = load_everything()
     wildcardlist, whiteblacklist = config_dict['wildcardlist'], config_dict['whiteblacklist']
@@ -186,6 +193,8 @@ def main():
 
     
     """The main blocking loop"""
+    # bark = resource_path('doggo.mp3')
+    # print(f"{bark}")
     while True:
         content = input_output.read_title()
         logging.info(content)
@@ -196,7 +205,10 @@ def main():
             logging.info("Killing")
             input_output.kill_window()
             if config_dict['pavlov']:
-                playsound("doggo.mp3")
+                try:
+                    playsound(bark)
+                except Exception as e:
+                    print(f"Error playing sound: {e}")
 
 
         time.sleep(1)
