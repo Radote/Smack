@@ -11,7 +11,7 @@ import json
 import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'QtSmack', 'Python')))
+from playsound import playsound
 
 from gui import start_GUI
 
@@ -64,15 +64,15 @@ def load_everything():
 
     misc_path = os.path.join(user_config_path, "misc.json")
     misc_dict = load_misc(misc_path)
-    
-    return {
+    config_dict = {
         'api-key': anthropic_api_key,
         'self-description': self_description,
         'wildcardlist': wildcardlist,
         'whiteblacklist': whiteblacklist,
-        'path_whiteblacklist': whiteblacklist_path,
-        'no-cache': misc_dict['no-cache']
+        'path_whiteblacklist': whiteblacklist_path
     }
+    config_dict.update(misc_dict)
+    return config_dict
 
 def query_model(content, service, plans):
     try:
@@ -130,10 +130,10 @@ def load_misc(file_path):
                 return data
             else:
                 logging.info(f"Creating new dictionary {file_path}")
-                return {"no-cache": False}
+                return {"no-cache": False, "pavlov": False}
     else:
         logging.info(f"Creating new dictionary {file_path}")
-        return {"no-cache": False}
+        return {"no-cache": False, "pavlov": False}
 
 def save_dictionary(dictionary, file_path):
     if dict:
@@ -147,11 +147,10 @@ def periodic_save(dictionary, file_path):
         time.sleep(20)
 
 if __name__ == '__main__':
-
     """First, we load all the variables and interact with the GUI"""
     config_dict = load_everything()
     wildcardlist, whiteblacklist = config_dict['wildcardlist'], config_dict['whiteblacklist']
-    config_dict.update(start_GUI(config_dict["api-key"], config_dict["self-description"], config_dict["no-cache"]))
+    config_dict.update(start_GUI(config_dict["api-key"], config_dict["self-description"], config_dict["no-cache"], config_dict['pavlov']))
     plans, anthropic_api_key, self_description, add_to_wildcardlist = config_dict['plans'], config_dict['api-key'], config_dict['self-description'], config_dict['add-to-wildcardlist']
     if config_dict['no-cache']:
         whiteblacklist = {}
@@ -177,7 +176,8 @@ if __name__ == '__main__':
     misc_config_path = os.path.join(user_config_path, "misc.json")
     with open(misc_config_path, "w") as file:
         misc_dict = {
-            'no-cache': config_dict['no-cache']
+            'no-cache': config_dict['no-cache'],
+            'pavlov': config_dict['pavlov']
         }
         json.dump(misc_dict, file)
 
@@ -192,4 +192,8 @@ if __name__ == '__main__':
         if query_wildcardlist(content, wildcardlist) == False or (query_wildcardlist(content, wildcardlist) == "NA" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
+            if config_dict['pavlov']:
+                playsound("doggo.mp3")
+
+
         time.sleep(1)

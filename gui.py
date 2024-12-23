@@ -14,14 +14,16 @@ class Bridge(QObject):
     apiKeyReady = Signal(str) # Note, in the scene01 file this is onApiKeyReady (weird QML syntax)
     selfDescriptReady = Signal(str)
     useCacheReady = Signal(bool)
+    pavlovReady = Signal(bool)
 
-    def __init__(self, api_key, self_description, no_cache):
+    def __init__(self, api_key, self_description, no_cache, pavlov):
         super().__init__()
         self.api_key = api_key
         self.self_description = self_description
         self.daily_plans = ""
         self.add_to_wildcardlist = {}
         self.no_cache = no_cache
+        self.pavlov = pavlov
 
     @Slot(str)
     def api_key_GtoP(self, s):
@@ -37,15 +39,19 @@ class Bridge(QObject):
 
     @Slot(result=bool)
     def load_no_cache(self):
-        print("DONE")
         self.useCacheReady.emit(self.no_cache)
 
-    @Slot(str, str, str, bool)
-    def start_program(self, s, t, v, w):
+    @Slot(result=bool)
+    def load_pavlov(self):
+        self.pavlovReady.emit(self.pavlov)    
+
+    @Slot(str, str, str, bool, bool)
+    def start_program(self, s, t, v, w, u):
         self.daily_plans = s
         self.api_key = t
         self.self_description = v
         self.no_cache = w
+        self.pavlov = u
         print("START")
         QApplication.quit()
     
@@ -67,12 +73,12 @@ def get_resource_path(file_name):
     return QUrl.fromLocalFile(os.path.join(base_path, file_name))
 
 
-def start_GUI(api_key, self_description, no_cache):
+def start_GUI(api_key, self_description, no_cache, pavlov):
     app = QGuiApplication(sys.argv)
 
     # Set up the QQuickView and load the QML file
     engine = QQmlApplicationEngine()
-    bridge = Bridge(api_key, self_description, no_cache)
+    bridge = Bridge(api_key, self_description, no_cache, pavlov)
     engine.rootContext().setContextProperty("con", bridge)
     qml_file = get_resource_path("smack.qml")
 
@@ -90,6 +96,7 @@ def start_GUI(api_key, self_description, no_cache):
     bridge.load_api_key()
     bridge.load_self_description()
     bridge.load_no_cache()
+    bridge.load_pavlov()
 
     app.exec()
 
@@ -98,7 +105,8 @@ def start_GUI(api_key, self_description, no_cache):
         "api-key": bridge.api_key, 
         "self-description": bridge.self_description, 
         "add-to-wildcardlist": bridge.add_to_wildcardlist,
-        "no-cache": bridge.no_cache
+        "no-cache": bridge.no_cache,
+        "pavlov":  bridge.pavlov
     }
 
 if __name__ == "__main__":

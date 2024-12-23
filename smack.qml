@@ -77,7 +77,7 @@ ApplicationWindow {
                         Keys.onPressed: function (event) {
                             if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && event.modifiers === Qt.ControlModifier) {
                                 console.log("Ctrl + Enter pressed");
-                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked);
+                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked);
                                 event.accept();
                             }
                         }
@@ -268,7 +268,7 @@ ApplicationWindow {
                     font.pixelSize: 30
                     font.family: "Courier"
                     Switch {
-                        id: _switch3
+                        id: pavlovswitch
                         x: 327
                         y: 0
                     }
@@ -472,7 +472,7 @@ ApplicationWindow {
             target: startprogram
 
             function onClicked() {
-                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked);
+                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked);
             }
         }
 
@@ -489,6 +489,10 @@ ApplicationWindow {
 
             function onUseCacheReady(nocache) {
                 nocacheswitch.checked = nocache;
+            }
+
+            function onPavlovReady(pavlov) {
+                pavlovswitch.checked = pavlov;
             }
         }
 
