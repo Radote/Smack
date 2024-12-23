@@ -12,6 +12,8 @@ import threading
 from dotenv import load_dotenv
 from appdirs import AppDirs
 from playsound import playsound
+from filelock import FileLock, Timeout
+
 
 from gui import start_GUI
 
@@ -146,7 +148,8 @@ def periodic_save(dictionary, file_path):
         save_dictionary(dictionary, file_path)
         time.sleep(20)
 
-if __name__ == '__main__':
+
+def main():
     """First, we load all the variables and interact with the GUI"""
     config_dict = load_everything()
     wildcardlist, whiteblacklist = config_dict['wildcardlist'], config_dict['whiteblacklist']
@@ -197,3 +200,14 @@ if __name__ == '__main__':
 
 
         time.sleep(1)
+
+
+if __name__ == '__main__':
+    lock_file = 'smack.lock'
+    lock = FileLock(lock_file)
+    try:
+        with lock.acquire(timeout=5):
+            main()
+    except Timeout:
+        print("Another instance of the program is already running. Exiting.")
+        sys.exit(1)  # Exit with a non-zero status code to indicate failure    
