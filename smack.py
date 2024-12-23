@@ -76,7 +76,7 @@ def load_everything():
     config_dict.update(misc_dict)
     return config_dict
 
-def query_model(content, service, plans):
+def query_model(content, service, plans, self_description):
     try:
         response = clientanthropic.messages.create(
             max_tokens = 3,
@@ -200,7 +200,7 @@ def main():
         logging.info(content)
         if content and not content in whiteblacklist and query_wildcardlist(content, wildcardlist) == "NA":
             logging.info("Querying Claude")
-            whiteblacklist[content] = query_model(content, "Claude", plans)
+            whiteblacklist[content] = query_model(content, "Claude", plans, self_description)
         if query_wildcardlist(content, wildcardlist) == False or (query_wildcardlist(content, wildcardlist) == "NA" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
