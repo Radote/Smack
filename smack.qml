@@ -77,7 +77,7 @@ ApplicationWindow {
                         Keys.onPressed: function (event) {
                             if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && event.modifiers === Qt.ControlModifier) {
                                 console.log("Ctrl + Enter pressed");
-                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text);
+                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked);
                                 event.accept();
                             }
                         }
@@ -275,6 +275,22 @@ ApplicationWindow {
                 }
 
                 Text {
+                    id: nocache
+                    x: 174
+                    y: 831
+                    width: 376
+                    height: 71
+                    text: "don't use cache"
+                    font.pixelSize: 30
+                    font.family: "Courier"
+                    Switch {
+                        id: nocacheswitch
+                        x: 327
+                        y: 0
+                    }
+                }
+
+                Text {
                     id: block
                     x: 176
                     y: 485
@@ -456,7 +472,7 @@ ApplicationWindow {
             target: startprogram
 
             function onClicked() {
-                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text);
+                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked);
             }
         }
 
@@ -469,6 +485,10 @@ ApplicationWindow {
 
             function onSelfDescriptReady(message) {
                 selfdescripttext.text = message;
+            }
+
+            function onUseCacheReady(nocache) {
+                nocacheswitch.checked = nocache;
             }
         }
 

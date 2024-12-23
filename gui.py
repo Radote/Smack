@@ -13,13 +13,15 @@ class Bridge(QObject):
     global daily_plans
     apiKeyReady = Signal(str) # Note, in the scene01 file this is onApiKeyReady (weird QML syntax)
     selfDescriptReady = Signal(str)
-    
-    def __init__(self, api_key, self_description):
+    useCacheReady = Signal(bool)
+
+    def __init__(self, api_key, self_description, no_cache):
         super().__init__()
         self.api_key = api_key
         self.self_description = self_description
         self.daily_plans = ""
         self.add_to_wildcardlist = {}
+        self.no_cache = no_cache
 
     @Slot(str)
     def api_key_GtoP(self, s):
@@ -32,11 +34,18 @@ class Bridge(QObject):
     @Slot(result=str)
     def load_self_description(self):
         self.selfDescriptReady.emit(self.self_description)
-    @Slot(str, str, str)
-    def start_program(self, s, t, v):
+
+    @Slot(result=bool)
+    def load_no_cache(self):
+        print("DONE")
+        self.useCacheReady.emit(self.no_cache)
+
+    @Slot(str, str, str, bool)
+    def start_program(self, s, t, v, w):
         self.daily_plans = s
         self.api_key = t
         self.self_description = v
+        self.no_cache = w
         print("START")
         QApplication.quit()
     
@@ -58,12 +67,12 @@ def get_resource_path(file_name):
     return QUrl.fromLocalFile(os.path.join(base_path, file_name))
 
 
-def start_GUI(api_key, self_description):
+def start_GUI(api_key, self_description, no_cache):
     app = QGuiApplication(sys.argv)
 
     # Set up the QQuickView and load the QML file
     engine = QQmlApplicationEngine()
-    bridge = Bridge(api_key, self_description)
+    bridge = Bridge(api_key, self_description, no_cache)
     engine.rootContext().setContextProperty("con", bridge)
     qml_file = get_resource_path("smack.qml")
 
@@ -80,10 +89,17 @@ def start_GUI(api_key, self_description):
     
     bridge.load_api_key()
     bridge.load_self_description()
+    bridge.load_no_cache()
 
     app.exec()
 
-    return bridge.daily_plans, bridge.api_key, bridge.self_description, bridge.add_to_wildcardlist
+    return {
+        "plans": bridge.daily_plans, 
+        "api-key": bridge.api_key, 
+        "self-description": bridge.self_description, 
+        "add-to-wildcardlist": bridge.add_to_wildcardlist,
+        "no-cache": bridge.no_cache
+    }
 
 if __name__ == "__main__":
     start_GUI("Nuhuh", "That's me")

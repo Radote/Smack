@@ -19,25 +19,16 @@ from gui import start_GUI
 
 """Loading up environment variables and dictionaries from memory"""
 
-anthropic_api_key = None
 clientanthropic = None
-wildcardlist = None
-self_description = None
-whiteblacklist = None
 
 def load_everything():
-    global anthropic_api_key
     global clientanthropic
-    global wildcardlist
-    global self_description
-    global whiteblacklist
     dirs = AppDirs("Smack", "Smack project")
     user_config_path = dirs.user_config_dir
     os.makedirs(user_config_path, exist_ok=True)
     path = os.path.join(*os.path.split(__file__)[:-1])
     self_description = ""
     os.chdir(path)
-    print(os.getcwd())
 
     logging.basicConfig(level=logging.INFO)
     logging.basicConfig(filename='smack.log', level=logging.info)
@@ -63,18 +54,25 @@ def load_everything():
             wildcardlist = {"Safeword": True}
             json.dump(wildcardlist, file)
 
-
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
    
     with open(self_descript_path, "r") as f:
         self_description = f.read()
     
-    file_path = os.path.join(user_config_path, "whiteblacklist.json")
+    whiteblacklist_path = os.path.join(user_config_path, "whiteblacklist.json")
+    whiteblacklist = load_whiteblacklist(whiteblacklist_path)
 
-    whiteblacklist = load_dictionary(file_path)
-    save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, file_path))
-    save_thread.start()
-
+    misc_path = os.path.join(user_config_path, "misc.json")
+    misc_dict = load_misc(misc_path)
+    
+    return {
+        'api-key': anthropic_api_key,
+        'self-description': self_description,
+        'wildcardlist': wildcardlist,
+        'whiteblacklist': whiteblacklist,
+        'path_whiteblacklist': whiteblacklist_path,
+        'no-cache': misc_dict['no-cache']
+    }
 
 def query_model(content, service, plans):
     try:
@@ -104,26 +102,38 @@ def query_model(content, service, plans):
         return True
 
 # Return False when it is not in wildcardlist, or is actually false (unproductive)
-def query_wildcardlist(word):
+def query_wildcardlist(word, wildcardlist):
     logging.info("Querying wildcardlist")
-    #wildcardlist = {"VLC": True, "Smack": False}
     for key in wildcardlist.keys():
         if key.lower() in word.lower(): 
             return wildcardlist[key]
     return "NA"
 
-def load_dictionary(file_path):
+def load_whiteblacklist(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
         with open(file_path, "r") as file:
             data = json.load(file)
             if isinstance(data, dict):
                 return data
             else:
-                logging.info("Creating new dictionary")
+                logging.info(f"Creating new dictionary {file_path}")
                 return {"Safeword": True}
     else:
-        logging.info("Creating new dictionary")
+        logging.info(f"Creating new dictionary {file_path}")
         return {"Safeword": True}
+    
+def load_misc(file_path):
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        with open(file_path, "r") as file:
+            data = json.load(file)
+            if isinstance(data, dict):
+                return data
+            else:
+                logging.info(f"Creating new dictionary {file_path}")
+                return {"no-cache": False}
+    else:
+        logging.info(f"Creating new dictionary {file_path}")
+        return {"no-cache": False}
 
 def save_dictionary(dictionary, file_path):
     if dict:
@@ -136,35 +146,50 @@ def periodic_save(dictionary, file_path):
         save_dictionary(dictionary, file_path)
         time.sleep(20)
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     """First, we load all the variables and interact with the GUI"""
-    load_everything()
-    plans, anthropic_api_key, self_description, add_to_wildcardlist = start_GUI(anthropic_api_key, self_description) # Won't let program go on until start on GUI pressed.
+    config_dict = load_everything()
+    wildcardlist, whiteblacklist = config_dict['wildcardlist'], config_dict['whiteblacklist']
+    config_dict.update(start_GUI(config_dict["api-key"], config_dict["self-description"], config_dict["no-cache"]))
+    plans, anthropic_api_key, self_description, add_to_wildcardlist = config_dict['plans'], config_dict['api-key'], config_dict['self-description'], config_dict['add-to-wildcardlist']
+    if config_dict['no-cache']:
+        whiteblacklist = {}
+    else:
+        save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, config_dict['path_whiteblacklist']))
+        save_thread.start()
+    
+    clientanthropic = anthropic.Anthropic(api_key=anthropic_api_key)
+
     dirs = AppDirs("Smack", "Smack project")
+
+    """Serializing config"""
     user_config_path = dirs.user_config_dir
-    #anthropic_api_key = os.getenv('ANTHROPIC_API_KEY')
     with open(os.path.join(user_config_path, ".env"), "w") as env_file:
-            env_file.write("ANTHROPIC_API_KEY=" + anthropic_api_key)
+        env_file.write("ANTHROPIC_API_KEY=" + anthropic_api_key)
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
     with open(self_descript_path, "w") as f:
-            f.write(self_description)
+        f.write(self_description)
     wildcardlist.update(add_to_wildcardlist)
     wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
     with open(wildcard_path, "w") as file:
-            json.dump(wildcardlist, file)
-    clientanthropic = anthropic.Anthropic(api_key=anthropic_api_key)
+        json.dump(wildcardlist, file)
+    misc_config_path = os.path.join(user_config_path, "misc.json")
+    with open(misc_config_path, "w") as file:
+        misc_dict = {
+            'no-cache': config_dict['no-cache']
+        }
+        json.dump(misc_dict, file)
 
     
     """The main blocking loop"""
     while True:
         content = input_output.read_title()
         logging.info(content)
-        if content and not content in whiteblacklist and query_wildcardlist(content) == "NA":
+        if content and not content in whiteblacklist and query_wildcardlist(content, wildcardlist) == "NA":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans)
-        if query_wildcardlist(content) == False or (query_wildcardlist(content) == "NA" and not whiteblacklist[content]):
+        if query_wildcardlist(content, wildcardlist) == False or (query_wildcardlist(content, wildcardlist) == "NA" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
         time.sleep(1)
