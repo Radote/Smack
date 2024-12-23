@@ -15,6 +15,9 @@ def read_title():
     except subprocess.CalledProcessError:
         logging.info("Error in read_title: xdotool command failed (probably no active window/Firefox)")
         return "Safeword"
+    except IndexError:
+        logging.info("Error in read_title: Split operation failed, possibly invalid format in WM_NAME")
+        return "Safeword"
 
 def kill_window():
     subprocess.run(['xdotool', 'key', 'ctrl+w'])
