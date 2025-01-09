@@ -43,12 +43,12 @@ def load_everything():
 
     wildcard_path = os.path.join(user_config_path, "wildcardlist.json")
     if os.path.exists(wildcard_path) and os.path.getsize(wildcard_path) > 0:
-            with open(wildcard_path, "r") as file:
-                data = json.load(file)
-                if isinstance(data, dict):
-                    wildcardlist = data
-                else:
-                    logging.info("Creating new wildcard dictionary")
+        with open(wildcard_path, "r") as file:
+            data = json.load(file)
+            if isinstance(data, dict):
+                wildcardlist = data
+            else:
+                logging.info("Creating new wildcard dictionary")
                     
     else:
         with open(wildcard_path, "w") as file:
@@ -57,9 +57,15 @@ def load_everything():
             json.dump(wildcardlist, file)
 
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
-   
-    with open(self_descript_path, "r") as f:
-        self_description = f.read()
+    if os.path.exists(self_descript_path) and os.path.getsize(self_descript_path) > 0:
+        with open(self_descript_path, "r") as f:
+            self_description = f.read()
+    else:
+        with open(self_descript_path, "w") as file:
+            logging.info("Creating new self-descript")
+            self_description = ""
+            f.write(self_description)
+    
     
     whiteblacklist_path = os.path.join(user_config_path, "whiteblacklist.json")
     whiteblacklist = load_whiteblacklist(whiteblacklist_path)
@@ -193,8 +199,8 @@ def main():
 
     
     """The main blocking loop"""
-    # bark = resource_path('doggo.mp3')
-    # print(f"{bark}")
+    bark = resource_path('doggo.mp3')
+    print(f"{bark}")
     while True:
         content = input_output.read_title()
         logging.info(content)
