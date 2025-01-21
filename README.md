@@ -27,13 +27,13 @@ pyinstaller --onefile --add-data "smack.qml:." --add-data "images/*:images" smac
 
 #### How much do the API calls cost?
 
-I've barely gone upwards of 5 cents a day. With time, it will also get more efficient as it gets to know your most frequent (productive and unproductive) websites.
+I've barely gone upwards of 5 cents a day. Normally, I average around 0.50 USD per month.
 
 #### It doesn't seem to work for some browsers (Linux)
 
 Yeah, unfortunately Wayland seems to interfere with the functioning of the program. It does work for Brave. If somebody knows any good tab-reading libraries/utilities for Linux, let me know! (Currently, we use xdotool).
 
-#### Where is all my data stored?
+#### Where is all my local data stored?
 
 All data is stored in the respective config directory of an OS. Note your API-key is stored in plaintext.
 
@@ -49,7 +49,7 @@ A very advanced use-case (if you have the money), is to store these misclassifie
 
 #### How do you recommend using this?
 
-I'd let it calibrate to you for a day. I set the program to turn on at startup. Afterwards, for the sake of habit, don't mess with it!
+First, add a bunch of websites you use regardless under the settings page (for example, you'll need a blanket ban/allow for Whatsapp Web). I set the program to turn on at startup. Afterwards, for the sake of habit, don't mess with it!
 
 Most will probably want to use this for work. But even when you're just chilling on the internet I think it's helpful - for example, you could ask it to stop you from doomscrolling.
 
@@ -65,7 +65,7 @@ Next time you run the program, say so in the prompt!
 
 #### What are good model providers?
 
-OpenAI, Anthropic and Google's LLM's performed well. Unfortunately, Mistral's LLM did not yet have broad enough knowledge for this task.
+OpenAI, Anthropic and Google's LLM's performed well. Unfortunately, Mistral's LLM did not yet have broad enough knowledge for this task (in November 2024).
 
 I'd recommend choosing based on:
 
