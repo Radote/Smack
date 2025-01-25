@@ -77,7 +77,7 @@ ApplicationWindow {
                         Keys.onPressed: function (event) {
                             if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && event.modifiers === Qt.ControlModifier) {
                                 console.log("Ctrl + Enter pressed");
-                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked);
+                                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked, resistdeathswitch.checked);
                                 event.accept();
                             }
                         }
@@ -195,7 +195,7 @@ ApplicationWindow {
                     font.family: "Courier"
 
                     Switch {
-                        id: _switch
+                        id: resistdeathswitch
                         x: 326
                         y: 0
                     }
@@ -472,7 +472,7 @@ ApplicationWindow {
             target: startprogram
 
             function onClicked() {
-                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked);
+                con.start_program(goaltodaytext.text, apikeyinput.text, selfdescripttext.text, nocacheswitch.checked, pavlovswitch.checked, resistdeathswitch.checked);
             }
         }
 
@@ -493,6 +493,10 @@ ApplicationWindow {
 
             function onPavlovReady(pavlov) {
                 pavlovswitch.checked = pavlov;
+            }
+
+            function onResistDeathReady(resistdeath) {
+                resistdeathswitch.checked = resistdeath;
             }
         }
 

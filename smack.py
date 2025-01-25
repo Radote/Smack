@@ -13,8 +13,11 @@ from dotenv import load_dotenv
 from appdirs import AppDirs
 from playsound import playsound
 from filelock import FileLock, Timeout
-
-
+import signal
+import string
+import setproctitle
+import random 
+import platform
 from gui import start_GUI
 
 
@@ -77,7 +80,10 @@ def load_everything():
         'self-description': self_description,
         'wildcardlist': wildcardlist,
         'whiteblacklist': whiteblacklist,
-        'path_whiteblacklist': whiteblacklist_path
+        'path_whiteblacklist': whiteblacklist_path,
+        'resist-death': False,
+        'pavlov': False,
+        'no-cache': True,
     }
     config_dict.update(misc_dict)
     return config_dict
@@ -115,7 +121,7 @@ def query_wildcardlist(word, wildcardlist):
     for key in wildcardlist.keys():
         if key.lower() in word.lower(): 
             return wildcardlist[key]
-    return "NA"
+    return "Unsure"
 
 def load_whiteblacklist(file_path):
     if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
@@ -165,14 +171,19 @@ def main():
     global clientanthropic
     """First, we load all the variables and interact with the GUI"""
     config_dict = load_everything()
-    wildcardlist, whiteblacklist = config_dict['wildcardlist'], config_dict['whiteblacklist']
-    config_dict.update(start_GUI(config_dict["api-key"], config_dict["self-description"], config_dict["no-cache"], config_dict['pavlov']))
-    plans, anthropic_api_key, self_description, add_to_wildcardlist = config_dict['plans'], config_dict['api-key'], config_dict['self-description'], config_dict['add-to-wildcardlist']
+    config_dict.update(start_GUI(config_dict["api-key"], config_dict["self-description"], config_dict["no-cache"], config_dict['pavlov'], config_dict["resist-death"]))
+    wildcardlist, whiteblacklist, plans, anthropic_api_key, self_description, add_to_wildcardlist = config_dict['wildcardlist'], config_dict['whiteblacklist'], config_dict['plans'], config_dict['api-key'], config_dict['self-description'], config_dict['add-to-wildcardlist']
     if config_dict['no-cache']:
         whiteblacklist = {}
     else:
         save_thread = threading.Thread(target=periodic_save, args=(whiteblacklist, config_dict['path_whiteblacklist']))
         save_thread.start()
+    if config_dict['resist-death']:
+        if platform.system() == 'Linux':
+            signal.signal(signal.SIGINT, lambda signum, frame: print("Nice try! SIGINT ignored."))
+            signal.signal(signal.SIGTERM, lambda signum, frame: print("Nice try! SIGTERM ignored."))
+            setproctitle.setproctitle(''.join(random.choices(string.ascii_lowercase + string.digits, k=8)))
+
     
     clientanthropic = anthropic.Anthropic(api_key=anthropic_api_key)
 
@@ -193,21 +204,22 @@ def main():
     with open(misc_config_path, "w") as file:
         misc_dict = {
             'no-cache': config_dict['no-cache'],
-            'pavlov': config_dict['pavlov']
+            'pavlov': config_dict['pavlov'],
+            'resist-death': config_dict['resist-death'],
         }
         json.dump(misc_dict, file)
 
-    
+   
+
     """The main blocking loop"""
     bark = resource_path('doggo.mp3')
-    print(f"{bark}")
     while True:
         content = input_output.read_title()
         logging.info(content)
-        if content and not content in whiteblacklist and query_wildcardlist(content, wildcardlist) == "NA":
+        if content and not content in whiteblacklist and query_wildcardlist(content, wildcardlist) == "Unsure":
             logging.info("Querying Claude")
             whiteblacklist[content] = query_model(content, "Claude", plans, self_description)
-        if query_wildcardlist(content, wildcardlist) == False or (query_wildcardlist(content, wildcardlist) == "NA" and not whiteblacklist[content]):
+        if query_wildcardlist(content, wildcardlist) == False or (query_wildcardlist(content, wildcardlist) == "Unsure" and not whiteblacklist[content]):
             logging.info("Killing")
             input_output.kill_window()
             if config_dict['pavlov']:

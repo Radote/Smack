@@ -15,8 +15,9 @@ class Bridge(QObject):
     selfDescriptReady = Signal(str)
     useCacheReady = Signal(bool)
     pavlovReady = Signal(bool)
+    resistDeathReady = Signal(bool)
 
-    def __init__(self, api_key, self_description, no_cache, pavlov):
+    def __init__(self, api_key, self_description, no_cache, pavlov, resist_death):
         super().__init__()
         self.api_key = api_key
         self.self_description = self_description
@@ -24,6 +25,7 @@ class Bridge(QObject):
         self.add_to_wildcardlist = {}
         self.no_cache = no_cache
         self.pavlov = pavlov
+        self.resist_death = resist_death
 
     @Slot(str)
     def api_key_GtoP(self, s):
@@ -45,13 +47,19 @@ class Bridge(QObject):
     def load_pavlov(self):
         self.pavlovReady.emit(self.pavlov)    
 
-    @Slot(str, str, str, bool, bool)
-    def start_program(self, s, t, v, w, u):
+    @Slot(result=bool)
+    def load_resist_death(self):
+        self.resistDeathReady.emit(self.resist_death)
+        
+
+    @Slot(str, str, str, bool, bool, bool)
+    def start_program(self, s, t, v, w, u, x):
         self.daily_plans = s
         self.api_key = t
         self.self_description = v
         self.no_cache = w
         self.pavlov = u
+        self.resist_death = x
         print("START")
         QApplication.quit()
     
@@ -73,12 +81,12 @@ def get_resource_path(file_name):
     return QUrl.fromLocalFile(os.path.join(base_path, file_name))
 
 
-def start_GUI(api_key, self_description, no_cache, pavlov):
+def start_GUI(api_key, self_description, no_cache, pavlov, resist_death):
     app = QGuiApplication(sys.argv)
 
     # Set up the QQuickView and load the QML file
     engine = QQmlApplicationEngine()
-    bridge = Bridge(api_key, self_description, no_cache, pavlov)
+    bridge = Bridge(api_key, self_description, no_cache, pavlov, resist_death)
     engine.rootContext().setContextProperty("con", bridge)
     qml_file = get_resource_path("smack.qml")
 
@@ -97,6 +105,7 @@ def start_GUI(api_key, self_description, no_cache, pavlov):
     bridge.load_self_description()
     bridge.load_no_cache()
     bridge.load_pavlov()
+    bridge.load_resist_death()
 
     app.exec()
 
@@ -106,7 +115,8 @@ def start_GUI(api_key, self_description, no_cache, pavlov):
         "self-description": bridge.self_description, 
         "add-to-wildcardlist": bridge.add_to_wildcardlist,
         "no-cache": bridge.no_cache,
-        "pavlov":  bridge.pavlov
+        "pavlov":  bridge.pavlov,
+        "resist-death": bridge.resist_death,
     }
 
 if __name__ == "__main__":
