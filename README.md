@@ -3,6 +3,12 @@
 Smack automatically blocks unproductive websites - no need to set-up a whitelist/blacklist that is outsmarted, or too big/small! Smack also adapts
 to your current needs dynamically.
 
+## Showcase
+
+[Smack Demo.webm](https://github.com/user-attachments/assets/471893e2-eefe-44c9-8804-22b6c0250d0a)
+
+Depicted: Browsing hard questions, then getting distracted by hot questions on stackexchange. Smack then closes the tab.
+
 ## Getting started
 
 Smack is available for Windows, Mac and Linux.
