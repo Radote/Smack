@@ -19,6 +19,7 @@ import setproctitle
 import random 
 import platform
 from gui import start_GUI
+import psutil
 
 
 
@@ -87,6 +88,11 @@ def load_everything():
     }
     config_dict.update(misc_dict)
     return config_dict
+
+def get_running_process_name():
+    """Get the name of a randomly chosen running process."""
+    processes = [p.info['name'] for p in psutil.process_iter(attrs=['name']) if p.info['name']]
+    return random.choice(processes) if processes else ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
 
 def query_model(content, service, plans, self_description):
     try:
@@ -182,7 +188,7 @@ def main():
         if platform.system() == 'Linux':
             signal.signal(signal.SIGINT, lambda signum, frame: print("Nice try! SIGINT ignored."))
             signal.signal(signal.SIGTERM, lambda signum, frame: print("Nice try! SIGTERM ignored."))
-            setproctitle.setproctitle(''.join(random.choices(string.ascii_lowercase + string.digits, k=8)))
+            setproctitle.setproctitle(get_running_process_name())
 
     
     clientanthropic = anthropic.Anthropic(api_key=anthropic_api_key)
