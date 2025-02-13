@@ -61,13 +61,13 @@ def load_everything():
 
     self_descript_path = os.path.join(user_config_path, "self-description.txt")
     if os.path.exists(self_descript_path) and os.path.getsize(self_descript_path) > 0:
-        with open(self_descript_path, "r") as f:
-            self_description = f.read()
+        with open(self_descript_path, "r") as file:
+            self_description = file.read()
     else:
         with open(self_descript_path, "w") as file:
             logging.info("Creating new self-descript")
             self_description = ""
-            f.write(self_description)
+            file.write(self_description)
     
     
     whiteblacklist_path = os.path.join(user_config_path, "whiteblacklist.json")
